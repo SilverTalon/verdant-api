@@ -7,6 +7,7 @@ var fs = require('fs'),
 	http = require('http'),
 	https = require('https'),
 	express = require('express'),
+	apiRouter = express.Router(),
 	morgan = require('morgan'),
 	logger = require('./logger'),
 	bodyParser = require('body-parser'),
@@ -83,8 +84,10 @@ module.exports = function(db) {
 
 	// Globbing routing files
 	config.getGlobbedFiles('./modules/**/*.routes.js').forEach(function(routePath) {
-		require(path.resolve(routePath))(app);
+		require(path.resolve(routePath))(apiRouter);
 	});
+
+	app.use('/api/v1', apiRouter);
 
 	// Assume 'not found' in the error msgs is a 404. this is somewhat silly, but valid, you can do whatever you like, set properties, use instanceof etc.
 	app.use(function(err, req, res, next) {
@@ -95,17 +98,12 @@ module.exports = function(db) {
 		console.error(err.stack);
 
 		// Error page
-		res.status(500).render('500', {
-			error: err.stack
-		});
+		res.status(500).send(err.stack);
 	});
 
 	// Assume 404 since no middleware responded
 	app.use(function(req, res) {
-		res.status(404).render('404', {
-			url: req.originalUrl,
-			error: 'Not Found'
-		});
+		res.status(404).send('Not found');
 	});
 
 	if (process.env.NODE_ENV === 'secure') {
