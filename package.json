@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "setup": "./setup.js",
-    "setup-ci": "./setup-ci.js",
     "start": "./node_modules/nodemon/bin/nodemon.js -e js,md server",
     "test": "./node_modules/lab/bin/lab -c -L",
     "test-cover": "./node_modules/lab/bin/lab -c -r html -o ./test/artifacts/coverage.html && xdg-open ./test/artifacts/coverage.html"
